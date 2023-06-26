@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f85fbdf44e1034d4d84f1ae62d56d62a, type: 3}
+  m_Name: Color
+  m_EditorClassIdentifier: 
+  planetColor: {r: 0.120016046, g: 0.3481965, b: 0.8773585, a: 0}
+  planetMaterial: {fileID: 2100000, guid: 5890c7180a4eac046872bff1f543f88a, type: 2}
