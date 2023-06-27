@@ -35,6 +35,9 @@ public class PlanetEditor : Editor {
 
         if (settings != null) {
 
+
+
+
             foldout = EditorGUILayout.InspectorTitlebar(foldout, settings);
 
             using (var check = new EditorGUI.ChangeCheckScope()) {
@@ -48,6 +51,7 @@ public class PlanetEditor : Editor {
 
                         if (onSettingsUpdated != null) {
 
+                            Debug.Log(onSettingsUpdated.ToString());
                             onSettingsUpdated();
                         }
                     }

@@ -5,25 +5,25 @@ using UnityEngine.UIElements;
 
 public class MinMax {
 
-    public float min { get; private set; }
-    public float max { get; private set; }
+    public float Min { get; private set; }
+    public float Max { get; private set; }
 
     public MinMax() {
 
-        min = float.MaxValue;
-        max = float.MinValue;
+        Min = float.MaxValue;
+        Max = float.MinValue;
     }
 
     public void AddValue(float v) {
 
-        if (v > max) {
+        if (v > Max) {
 
-            max = v;
+            Max = v;
         }
 
-        if (v < min) {
+        if (v < Min) {
         
-            min = v;
+            Min = v;
         }
     }
 }
