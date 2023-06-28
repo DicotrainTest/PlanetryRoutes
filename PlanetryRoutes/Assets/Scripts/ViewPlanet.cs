@@ -8,16 +8,13 @@ public class ViewPlanet : MonoBehaviour {
     [SerializeField] private Transform planet;
 
     [Header("variable that can be changed")]
-    [SerializeField] private float planetViewDistance = 200f;
+    [SerializeField] private float planetViewDistance = 10f;
 
-    [Header("variable that cannot be changed")]
-    [SerializeField] private float planetViewDistanceMultiplier = 100f;
+    private float planetRadius;
 
-    private float planetSize;
+        private void Start() {
 
-    private void Start() {
-
-        planetSize = planet.localScale.x / planetViewDistanceMultiplier;
+        planetRadius = planet.gameObject.GetComponent<Planet>().shapeSettings.planetRadius;
     }
 
     private void Update() {
@@ -26,6 +23,6 @@ public class ViewPlanet : MonoBehaviour {
 
         transform.LookAt(planet);
 
-        transform.position = Vector3.MoveTowards(transform.position, planet.position, dist - (planetViewDistance * planetSize));
+        transform.position = Vector3.MoveTowards(transform.position, planet.position, dist - (planetViewDistance + planetRadius));
     }
 }
