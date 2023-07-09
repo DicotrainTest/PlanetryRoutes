@@ -607,7 +607,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3879b49197ec32d41ae8d69de5461d66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameInput: {fileID: 1470227534}
   mainCamera: {fileID: 330585545}
   normalCameraStateMouseSensitivity: 100
   orbitingCameraStateMouseSensitivity: 100
@@ -768,7 +767,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   airportPrefab: {fileID: 9046674660397506574, guid: 1cb3fd291aeca6a46a5ea6282846052f,
     type: 3}
-  gameInput: {fileID: 1470227534}
+  planets:
+  - {fileID: 356712995}
 --- !u!4 &1675344356
 Transform:
   m_ObjectHideFlags: 0
@@ -900,7 +900,6 @@ MonoBehaviour:
   mainCamera: {fileID: 330585545}
   groundLayerNumber: 6
   airportsLayerNumber: 7
-  gameInput: {fileID: 1470227534}
   mousePoint: {x: 0, y: 0, z: 0}
   routeStartingAirport: {x: 0, y: 0, z: 0}
   routeEndingAirport: {x: 0, y: 0, z: 0}

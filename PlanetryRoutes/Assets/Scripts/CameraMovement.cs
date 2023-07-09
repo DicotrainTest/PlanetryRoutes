@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour {
 
-    [SerializeField] private GameInput gameInput;
+    private GameInput gameInput;
     [SerializeField] private Camera mainCamera;
 
     [SerializeField] private float normalCameraStateMouseSensitivity = 100f;
@@ -31,6 +31,11 @@ public class CameraMovement : MonoBehaviour {
     private void Awake() {
         
         cameraMovementState = CameraMovementState.Orbiting;
+    }
+
+    private void Start() {
+
+        gameInput = GameInput.Instance.GetComponent<GameInput>();
     }
 
     private void Update() {

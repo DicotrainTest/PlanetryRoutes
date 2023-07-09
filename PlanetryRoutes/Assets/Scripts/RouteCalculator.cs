@@ -108,6 +108,7 @@ public class RouteCalculator : MonoBehaviour {
         UpdateLineRenderer(true, lineMaterial, color, width);
 
         if (numberOfPoints > 1) {
+
             lineRenderer.positionCount = numberOfPoints;
         } else {
 
@@ -145,6 +146,7 @@ public class RouteCalculator : MonoBehaviour {
         UpdateLineRenderer(true, lineMaterial, color, width);
 
         if (numberOfPoints > 1) {
+
             lineRenderer.positionCount = numberOfPoints;
         } else {
 
@@ -173,18 +175,23 @@ public class RouteCalculator : MonoBehaviour {
 
     private Vector3 AttachGroundLineToGround(Vector3 position) {
 
+        Vector3 checkPosition = position;
+
         float radius = 0.01f;
-        Collider[] colliders = Physics.OverlapSphere(position, radius, groundLayerMask);
+
+        Collider[] colliders = Physics.OverlapSphere(checkPosition, radius, groundLayerMask);
+
+        Debug.Log(Physics.OverlapSphere(checkPosition, radius, groundLayerMask));
 
         if (colliders.Length <= 0) {
             //no collision detected
             while (colliders.Length <= 0) {
 
-                position.y -= radius;
-                colliders = Physics.OverlapSphere(position, radius, groundLayerMask);
+                checkPosition.y -= radius;
+                colliders = Physics.OverlapSphere(checkPosition, radius, groundLayerMask);
             }
 
-            return position;
+            return checkPosition;
         } else {
 
             if (colliders.Length > 0) {
@@ -192,14 +199,14 @@ public class RouteCalculator : MonoBehaviour {
 
                 while (colliders.Length > 0) {
 
-                    position.y += radius;
-                    colliders = Physics.OverlapSphere(position, radius, groundLayerMask);
+                    checkPosition.y += radius;
+                    colliders = Physics.OverlapSphere(checkPosition, radius, groundLayerMask);
                 }
 
-                return position;
+                return checkPosition;
             }
 
-            return position;
+            return checkPosition;
         }
     }
 

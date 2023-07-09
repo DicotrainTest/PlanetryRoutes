@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseTarget : MonoBehaviour {
 
@@ -18,9 +19,11 @@ public class MouseTarget : MonoBehaviour {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private int groundLayerNumber;
     [SerializeField] private int airportsLayerNumber;
-    [SerializeField] private GameInput gameInput;
 
-    public Vector3 mousePoint;
+    private GameInput gameInput;
+
+    public Vector3 routePreviewPoint;
+    public Vector3 placeAirportPoint;
 
     public Vector3 routeStartingAirport;
     public Vector3 routeEndingAirport;
@@ -35,6 +38,8 @@ public class MouseTarget : MonoBehaviour {
 
     private State state;
 
+    private RaycastHit mousePositionRaycastHit;
+
     private void Awake() {
 
         if (Instance != null) {
@@ -45,6 +50,8 @@ public class MouseTarget : MonoBehaviour {
     }
 
     private void Start() {
+
+        gameInput = GameInput.Instance.GetComponent<GameInput>();
 
         gameInput.OnSpawnAircraftAction += GameInput_OnSpawnAircraftAction;
     }
@@ -68,6 +75,8 @@ public class MouseTarget : MonoBehaviour {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit raycastHit)) {
+
+            mousePositionRaycastHit = raycastHit;
 
             if (raycastHit.transform.gameObject.layer == airportsLayerNumber) {
                 //this is airport
@@ -133,14 +142,16 @@ public class MouseTarget : MonoBehaviour {
 
         transform.position = airportsRayCastHit.point;
 
-        mousePoint = RoutePreviewEndingPointPoint.position;
+        placeAirportPoint = transform.position;
+        routePreviewPoint = RoutePreviewEndingPointPoint.position;
     }
 
     private void HandleGroundInteraction(RaycastHit groundRayCastHit) {
 
         transform.position = groundRayCastHit.point;
 
-        mousePoint = RoutePreviewEndingPointPoint.position;
+        placeAirportPoint = transform.position;
+        routePreviewPoint = RoutePreviewEndingPointPoint.position;
     }
 
     private void SetSelectedAirport(Airport selectedAirport) {
@@ -149,5 +160,10 @@ public class MouseTarget : MonoBehaviour {
         OnSelectedAirportChanged?.Invoke(this, new OnSelectedAirportChangedEventArgs {
             selectedAirport = selectedAirport
         });
+    }
+
+    public bool IsGameObjectThatsTouchingMousePointerIsInGroundLayer() {
+
+        return mousePositionRaycastHit.transform.gameObject.layer == groundLayerNumber;
     }
 }

@@ -64,7 +64,7 @@ public class GenerateRoutes : MonoBehaviour {
 
             case State.PlacingEndingPoint: {
 
-                    EndingPointVec3 = mouseTarget.mousePoint;
+                    EndingPointVec3 = mouseTarget.routePreviewPoint;
                     OnStartingPointAndEndingPointVec3Changed?.Invoke(this, EventArgs.Empty);
                     break;
                 }
