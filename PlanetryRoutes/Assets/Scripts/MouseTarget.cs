@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MouseTarget : MonoBehaviour {
@@ -13,9 +14,10 @@ public class MouseTarget : MonoBehaviour {
         public Airport selectedAirport;
     }
 
+    [SerializeField] private Transform RoutePreviewEndingPointPoint;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private LayerMask GroundLayerMask;
-    [SerializeField] private LayerMask AirportsLayerMask;
+    [SerializeField] private int groundLayerNumber;
+    [SerializeField] private int airportsLayerNumber;
     [SerializeField] private GameInput gameInput;
 
     public Vector3 mousePoint;
@@ -65,23 +67,28 @@ public class MouseTarget : MonoBehaviour {
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit AirportsRayCastHit, float.MaxValue, AirportsLayerMask)) {
+        if (Physics.Raycast(ray, out RaycastHit raycastHit)) {
 
-            HandleAirportsInteraction(AirportsRayCastHit);
-        } else {
+            if (raycastHit.transform.gameObject.layer == airportsLayerNumber) {
+                //this is airport
 
-            SetSelectedAirport(null);
+                HandleAirportsInteraction(raycastHit);
+            } else {
 
-            if (Physics.Raycast(ray, out RaycastHit GroundRayCastHit, float.MaxValue, GroundLayerMask)) {
+                if (raycastHit.transform.gameObject.layer == groundLayerNumber) {
+                    //this is ground
 
-                HandleGroundInteraction(GroundRayCastHit);
+                    SetSelectedAirport(null);
+
+                    HandleGroundInteraction(raycastHit);
+                }
             }
         }
     }
 
     private void HandleAddingRoute() {
 
-        if (gameInput.PressedLeftMouseButton()) {
+        if (gameInput.LeftMouseButtonDown()) {
 
             if (selectedAirport != null) {
 
@@ -89,15 +96,15 @@ public class MouseTarget : MonoBehaviour {
 
                     case State.StartingPoint: {
                             state = State.EndingPoint;
-                            routeStartingAirport = selectedAirport.transform.position;
+                            routeStartingAirport = selectedAirport.GetRouteGenerationPoint();
                             selectedAirport.StartPointInteract();
                             break;
                         }
                     case State.EndingPoint: {
 
-                        if (selectedAirport.transform.position != routeStartingAirport) {
+                        if (selectedAirport.GetRouteGenerationPoint() != routeStartingAirport) {
                             state = State.StartingPoint;
-                            routeEndingAirport = selectedAirport.transform.position;
+                            routeEndingAirport = selectedAirport.GetRouteGenerationPoint();
                             selectedAirport.EndPointInteract();
                             break;
                         } else {
@@ -110,9 +117,9 @@ public class MouseTarget : MonoBehaviour {
         }
     }
 
-    private void HandleAirportsInteraction(RaycastHit AirportsRayCastHit) {
+    private void HandleAirportsInteraction(RaycastHit airportsRayCastHit) {
 
-        if (AirportsRayCastHit.transform.TryGetComponent(out Airport airport)) {
+        if (airportsRayCastHit.transform.TryGetComponent(out Airport airport)) {
 
             //has airport
             if (airport != selectedAirport) {
@@ -120,19 +127,20 @@ public class MouseTarget : MonoBehaviour {
                 SetSelectedAirport(airport);
             }
         } else {
+
             SetSelectedAirport(null);
         }
 
-        mousePoint = AirportsRayCastHit.point;
+        transform.position = airportsRayCastHit.point;
 
-        transform.position = mousePoint;
+        mousePoint = RoutePreviewEndingPointPoint.position;
     }
 
-    private void HandleGroundInteraction(RaycastHit GroundRayCastHit) {
+    private void HandleGroundInteraction(RaycastHit groundRayCastHit) {
 
-        mousePoint = GroundRayCastHit.point;
+        transform.position = groundRayCastHit.point;
 
-        transform.position = mousePoint;
+        mousePoint = RoutePreviewEndingPointPoint.position;
     }
 
     private void SetSelectedAirport(Airport selectedAirport) {

@@ -15,8 +15,9 @@ public class PlanetEditor : Editor {
         using (var check = new EditorGUI.ChangeCheckScope())
         {
             base.OnInspectorGUI();
-            if (check.changed)
-            {
+
+            if (check.changed) {
+
                 planet.GeneratePlanet();
             }
         }
@@ -24,6 +25,11 @@ public class PlanetEditor : Editor {
         if (GUILayout.Button("Generate Planet"))
         {
             planet.GeneratePlanet();
+        }
+
+        if (GUILayout.Button("Clear Planet")) {
+
+            planet.Clear();
         }
 
         DrawSettingsEditor(planet.shapeSettings, planet.OnShapeSettingsUpdated, ref planet.shapeSettingsFoldout, ref shapeEditor);

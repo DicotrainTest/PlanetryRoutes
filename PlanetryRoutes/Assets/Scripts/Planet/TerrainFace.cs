@@ -8,15 +8,17 @@ public class TerrainFace
 
     ShapeGenerator shapeGenerator;
     Mesh mesh;
+    MeshCollider meshCollider;
     int resolution;
     Vector3 localUp;
     Vector3 axisA;
     Vector3 axisB;
 
-    public TerrainFace(ShapeGenerator shapeGenerator, Mesh mesh, int resolution, Vector3 localUp)
+    public TerrainFace(ShapeGenerator shapeGenerator, Mesh mesh, MeshCollider meshCollider, int resolution, Vector3 localUp)
     {
         this.shapeGenerator = shapeGenerator;
         this.mesh = mesh;
+        this.meshCollider = meshCollider;
         this.resolution = resolution;
         this.localUp = localUp;
 
@@ -29,7 +31,7 @@ public class TerrainFace
         Vector3[] vertices = new Vector3[resolution * resolution];
         int[] triangles = new int[(resolution - 1) * (resolution - 1) * 6];
         int triIndex = 0;
-        Vector2[] uv = (mesh.uv.Length == vertices.Length)?mesh.uv:new Vector2[vertices.Length];
+        Vector2[] uv = (mesh.uv.Length == vertices.Length) ? mesh.uv : new Vector2[vertices.Length];
 
         for (int y = 0; y < resolution; y++)
         {
@@ -61,6 +63,8 @@ public class TerrainFace
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
         mesh.uv = uv;
+        meshCollider.sharedMesh = mesh;
+        meshCollider.enabled = true;
     }
 
     public void UpdateUVs(ColourGenerator colourGenerator)

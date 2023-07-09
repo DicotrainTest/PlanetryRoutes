@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &548143436702715272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 437501801960810305}
+  m_Layer: 0
+  m_Name: RouteGenerationPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &437501801960810305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548143436702715272}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9046674660397506574}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9046674660360108988
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,6 +144,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 437501801960810305}
   - {fileID: 9046674662023345823}
   - {fileID: 9046674661772084171}
   m_Father: {fileID: 0}
@@ -145,6 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aircraftPrefab: {fileID: 1846382843711815036, guid: 54e6a35f969b4474d853abf2d1c956af,
     type: 3}
+  routeGenerationPoint: {fileID: 437501801960810305}
 --- !u!1 &9046674661714637387
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +292,7 @@ Transform:
   m_Children:
   - {fileID: 9046674661714637386}
   m_Father: {fileID: 9046674660397506574}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 1.6, z: 0}
 --- !u!114 &9046674661772084170
 MonoBehaviour:
@@ -305,5 +338,5 @@ Transform:
   m_Children:
   - {fileID: 9046674660360108963}
   m_Father: {fileID: 9046674660397506574}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 1.6, z: 0}

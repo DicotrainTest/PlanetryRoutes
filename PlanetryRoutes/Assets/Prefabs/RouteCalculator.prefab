@@ -47,5 +47,8 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 0}
   width: 0.5
   height: 30
-  lineMaterial: {fileID: 2100000, guid: ce933f8ab5817e94abed7abc2a1dbfff, type: 2}
+  lineMaterial: {fileID: 2100000, guid: ee4dfc6665393cc4fad6a5ff02b93562, type: 2}
   lineQuality: 0.75
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64

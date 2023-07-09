@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 public class RouteCalculator : MonoBehaviour {
 
@@ -15,6 +18,7 @@ public class RouteCalculator : MonoBehaviour {
     [SerializeField] private float height;
     [SerializeField] private Material lineMaterial;
     [SerializeField] private float lineQuality;
+    [SerializeField] private LayerMask groundLayerMask;
 
     private GenerateRoutes generateRoutes;
     private LineRenderer lineRenderer;
@@ -30,7 +34,17 @@ public class RouteCalculator : MonoBehaviour {
 
     private int numberOfPoints = 15;
 
+    private enum RouteState {
+
+        bezierCurve,
+        groundLine,
+    }
+
+    private RouteState routeState;
+
     private void Awake() {
+
+        routeState = RouteState.groundLine;
 
         positionSaveList = new List<Vector3>();
     }
@@ -60,7 +74,21 @@ public class RouteCalculator : MonoBehaviour {
 
     private void Update() {
 
-        DrawBezierCurve();
+        switch (routeState) {
+
+            case RouteState.bezierCurve: {
+
+                DrawBezierCurve();
+                break;
+            }
+
+            case RouteState.groundLine: {
+
+                DrawGroundLine();
+                break;
+            }
+        }
+
         HandleLineLengthAndQuality();
     }
 
@@ -77,15 +105,13 @@ public class RouteCalculator : MonoBehaviour {
         }
 
         // update line renderer
-        lineRenderer.enabled = true;
-        lineRenderer.material = lineMaterial;
-        lineRenderer.startColor = color;
-        lineRenderer.endColor = color;
-        lineRenderer.startWidth = width;
-        lineRenderer.endWidth = width;
+        UpdateLineRenderer(true, lineMaterial, color, width);
 
-        if (numberOfPoints > 0) {
+        if (numberOfPoints > 1) {
             lineRenderer.positionCount = numberOfPoints;
+        } else {
+
+            return;
         }
 
         // set points of quadratic Bezier curve
@@ -96,24 +122,7 @@ public class RouteCalculator : MonoBehaviour {
         float t;
         Vector3 position;
 
-
-        if (positionSaveList.Count < numberOfPoints) {
-
-            for (int i = 0; i < numberOfPoints; i++) {
-
-                positionSaveList.Add(Vector3.zero);
-            }
-        } else {
-
-            if (positionSaveList.Count > numberOfPoints) {
-
-                int differentBetweenLengthAndNumberOfPoints = positionSaveList.Count - numberOfPoints;
-                for (int i = 0; i < differentBetweenLengthAndNumberOfPoints; i++) {
-
-                    positionSaveList.RemoveAt(0);
-                }
-            }
-        }
+        SetLengthOfPositionSaveList();
 
         //draw line
         for (int i = 0; i < numberOfPoints; i++) {
@@ -123,6 +132,74 @@ public class RouteCalculator : MonoBehaviour {
             lineRenderer.SetPosition(i, position);
 
             positionSaveList[i] = position;
+        }
+    }
+
+    private void DrawGroundLine() {
+
+        if (lineRenderer == null || startingPoint == null || middlePoint == null || endingPoint == null) {
+            return; // no points specified
+        }
+
+        //update line renderer
+        UpdateLineRenderer(true, lineMaterial, color, width);
+
+        if (numberOfPoints > 1) {
+            lineRenderer.positionCount = numberOfPoints;
+        } else {
+
+            return;
+        }
+
+        SetLengthOfPositionSaveList();
+
+        Vector3 p0 = startingPoint;
+        Vector3 p1 = endingPoint;
+
+        Vector3 position;
+
+        //draw line
+        for (int i = 0; i < numberOfPoints; i++) {
+
+            position = Vector3.Lerp(p0, p1, i / (numberOfPoints - 1));
+
+            position = AttachGroundLineToGround(position);
+
+            lineRenderer.SetPosition(i, position);
+
+            positionSaveList[i] = position;
+        }
+    }
+
+    private Vector3 AttachGroundLineToGround(Vector3 position) {
+
+        float radius = 0.01f;
+        Collider[] colliders = Physics.OverlapSphere(position, radius, groundLayerMask);
+
+        if (colliders.Length <= 0) {
+            //no collision detected
+            while (colliders.Length <= 0) {
+
+                position.y -= radius;
+                colliders = Physics.OverlapSphere(position, radius, groundLayerMask);
+            }
+
+            return position;
+        } else {
+
+            if (colliders.Length > 0) {
+                //collision detected
+
+                while (colliders.Length > 0) {
+
+                    position.y += radius;
+                    colliders = Physics.OverlapSphere(position, radius, groundLayerMask);
+                }
+
+                return position;
+            }
+
+            return position;
         }
     }
 
@@ -145,6 +222,27 @@ public class RouteCalculator : MonoBehaviour {
 
         generateRoutes.OnStartingPointAndEndingPointVec3Changed -= GenerateRoutes_OnStartingPointAndEndingPointVec3Changed;
         generateRoutes.OnEndingPointGenerated -= GenerateRoutes_OnEndingPointGenerated;
+    }
+
+    private void SetLengthOfPositionSaveList() {
+
+        if (positionSaveList.Count < numberOfPoints) {
+
+            for (int i = 0; i < numberOfPoints; i++) {
+
+                positionSaveList.Add(Vector3.zero);
+            }
+        } else {
+
+            if (positionSaveList.Count > numberOfPoints) {
+
+                int differentBetweenLengthAndNumberOfPoints = positionSaveList.Count - numberOfPoints;
+                for (int i = 0; i < differentBetweenLengthAndNumberOfPoints; i++) {
+
+                    positionSaveList.RemoveAt(0);
+                }
+            }
+        }
     }
 
     public Vector3 GetNextWaypoint(Vector3 currentPosition, bool isFirstTime, bool isMovingForward) {
@@ -184,5 +282,15 @@ public class RouteCalculator : MonoBehaviour {
 
             return positionSaveList[0];
         }
+    }
+
+    private void UpdateLineRenderer(bool lineRendererEnabled, Material lineRendererMaterial, Color lineRendererColor, float lineRendererWidth) {
+
+        lineRenderer.enabled = lineRendererEnabled;
+        lineRenderer.material = lineRendererMaterial;
+        lineRenderer.startColor = lineRendererColor;
+        lineRenderer.endColor = lineRendererColor;
+        lineRenderer.startWidth = lineRendererWidth;
+        lineRenderer.endWidth = lineRendererWidth;
     }
 }

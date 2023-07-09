@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class GameInput : MonoBehaviour {
 
@@ -30,7 +32,7 @@ public class GameInput : MonoBehaviour {
         OnSpawnAircraftAction?.Invoke(this, EventArgs.Empty);
     }
 
-    public bool PressedLeftMouseButton() {
+    public bool LeftMouseButtonDown() {
 
         if (Input.GetMouseButtonDown(0)) {
 
@@ -39,5 +41,44 @@ public class GameInput : MonoBehaviour {
 
             return false;
         }
+    }
+
+    public bool RightMouseButtonDown() {
+
+        if (Input.GetMouseButtonDown(1)) {
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+    public bool HoldingRightMouseButton() {
+
+        if (Input.GetMouseButton(1)) {
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+    public Vector2 GetWASDInputVector() {
+
+        Vector2 inputVector = playerInputActions.Player.Movement.ReadValue<Vector2>();
+
+        return inputVector;
+    }
+
+    public Vector2 GetMouseAxisRaw() {
+
+        Vector2 mouseInputVector;
+
+        mouseInputVector.x = Input.GetAxisRaw("Mouse X");
+        mouseInputVector.y = Input.GetAxisRaw("Mouse Y");
+
+        return mouseInputVector;
     }
 }

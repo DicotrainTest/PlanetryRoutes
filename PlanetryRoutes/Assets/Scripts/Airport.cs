@@ -5,6 +5,7 @@ using UnityEngine;
 public class Airport : MonoBehaviour {
 
     [SerializeField] private Transform aircraftPrefab;
+    [SerializeField] private Transform routeGenerationPoint;
 
     private List<GameObject> routesInThisAirportList;
     private List<bool> isStartingPointList;
@@ -61,5 +62,10 @@ public class Airport : MonoBehaviour {
                 Debug.LogError("routesInThisAirportList.Count & isStartingPointList.Count is not same");
             }
         }
+    }
+
+    public Vector3 GetRouteGenerationPoint() {
+
+        return routeGenerationPoint.position;
     }
 }
