@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class GenerateAirports : MonoBehaviour {
 
-    private Transform closestPlanet;
+    private Planet closestPlanet;
 
     [SerializeField] private Transform airportPrefab;
-    [SerializeField] private Transform[] planets;
+    [SerializeField] private Planet[] planets;
 
     private GameInput gameInput;
 
@@ -39,18 +39,19 @@ public class GenerateAirports : MonoBehaviour {
         airportInstantiated.gameObject.name = airportName;
         float max = float.MaxValue;
 
-        foreach (Transform t in planets) {
+        foreach (Planet planet in planets) {
 
-            float dist = Vector3.Distance(airportInstantiated.position, t.position);
+            float dist = Vector3.Distance(airportInstantiated.position, planet.transform.position);
 
             if (dist < max) {
 
-                closestPlanet = t;
+                closestPlanet = planet;
                 max = dist;
             }
         }
 
-        airportInstantiated.LookAt(closestPlanet);
+        airportInstantiated.GetComponent<Airport>().SetPlacedPlanet(closestPlanet);
+        airportInstantiated.LookAt(closestPlanet.transform);
         airportInstantiated.localEulerAngles += Vector3.left * 90;
     }
 }

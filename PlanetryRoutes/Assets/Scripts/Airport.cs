@@ -12,6 +12,8 @@ public class Airport : MonoBehaviour {
 
     private GenerateRoutes generateRoutes;
 
+    private Planet placedPlanet;
+
     private Transform aircraft;
 
     private void Awake() {
@@ -67,5 +69,15 @@ public class Airport : MonoBehaviour {
     public Vector3 GetRouteGenerationPoint() {
 
         return routeGenerationPoint.position;
+    }
+
+    public void SetPlacedPlanet(Planet placedPlanet) {
+
+        this.placedPlanet = placedPlanet;
+    }
+
+    public Planet GetPlacedPlanet() {
+
+        return placedPlanet;
     }
 }

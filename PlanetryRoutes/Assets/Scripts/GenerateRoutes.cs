@@ -2,22 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GenerateRoutes : MonoBehaviour {
 
     public static GenerateRoutes Instance { get; private set; }
 
-    public event EventHandler OnEndingPointGenerated;
-    public event EventHandler OnStartingPointAndEndingPointVec3Changed;
-
     private List<Airport> startingPointInteractedAirportHistoryList;
     private List<Airport> endingPointInteractedAirportHistoryList;
 
     [SerializeField] private GameObject routeCalculatorPrefab;
 
-    public Vector3 StartingPointVec3;
-    public Vector3 EndingPointVec3;
+    private Vector3 startingPointVec3;
+    private Vector3 endingPointVec3;
 
     private MouseTarget mouseTarget;
 
@@ -64,8 +62,12 @@ public class GenerateRoutes : MonoBehaviour {
 
             case State.PlacingEndingPoint: {
 
-                    EndingPointVec3 = mouseTarget.routePreviewPoint;
-                    OnStartingPointAndEndingPointVec3Changed?.Invoke(this, EventArgs.Empty);
+                    endingPointVec3 = mouseTarget.routePreviewPoint;
+
+                    Planet planetThatMouseIsOn = mouseTarget.GetPlanetThatMouseIsOn();
+
+                    routeCalculator.GetComponent<RouteCalculator>().SetStartingAndEndingPlanet(startingPointInteractedAirport.GetPlacedPlanet(), planetThatMouseIsOn);
+                    routeCalculator.GetComponent<RouteCalculator>().Vec3sChanged(startingPointVec3, endingPointVec3);
                     break;
                 }
         }
@@ -73,11 +75,9 @@ public class GenerateRoutes : MonoBehaviour {
 
     private void GenerateStartingPoint() {
 
-        StartingPointVec3 = mouseTarget.routeStartingAirport;
+        startingPointVec3 = mouseTarget.routeStartingAirport;
 
         state = State.PlacingEndingPoint;
-
-        Debug.Log("starting point");
 
         routeNum++;
 
@@ -85,7 +85,10 @@ public class GenerateRoutes : MonoBehaviour {
 
         routeCalculator.name = "route (" + routeNum + ")";
 
-        OnStartingPointAndEndingPointVec3Changed?.Invoke(this, EventArgs.Empty);
+        Planet planetThatMouseIsOn = mouseTarget.GetPlanetThatMouseIsOn();
+
+        routeCalculator.GetComponent<RouteCalculator>().SetStartingAndEndingPlanet(startingPointInteractedAirport.GetPlacedPlanet(), planetThatMouseIsOn);
+        routeCalculator.GetComponent<RouteCalculator>().Vec3sChanged(startingPointVec3, endingPointVec3);
     }
     private void GenerateEndingPoint() {
 
@@ -101,13 +104,12 @@ public class GenerateRoutes : MonoBehaviour {
                 }
             }
 
-            EndingPointVec3 = mouseTarget.routeEndingAirport;
-
-            OnStartingPointAndEndingPointVec3Changed?.Invoke(this, EventArgs.Empty);
-
-            OnEndingPointGenerated?.Invoke(this, EventArgs.Empty);
+            endingPointVec3 = mouseTarget.routeEndingAirport;
+            routeCalculator.GetComponent<RouteCalculator>().Vec3sChanged(startingPointVec3, endingPointVec3);
 
             state = State.Idle;
+
+            routeCalculator.GetComponent<RouteCalculator>().SetStartingAndEndingPlanet(startingPointInteractedAirport.GetPlacedPlanet(), endingPointInteractedAirport.GetPlacedPlanet());
 
             if (!hasFoundOverlapping) {
 

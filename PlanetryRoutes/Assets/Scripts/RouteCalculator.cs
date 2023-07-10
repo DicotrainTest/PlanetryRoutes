@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem.LowLevel;
@@ -18,14 +19,18 @@ public class RouteCalculator : MonoBehaviour {
     [SerializeField] private float height;
     [SerializeField] private Material lineMaterial;
     [SerializeField] private float lineQuality;
+
+    [Header("layer")]
     [SerializeField] private LayerMask groundLayerMask;
 
-    private GenerateRoutes generateRoutes;
     private LineRenderer lineRenderer;
 
     private Vector3 startingPoint;
     private Vector3 middlePoint;
     private Vector3 endingPoint;
+
+    private Planet startingPlanet;
+    private Planet endingPlanet;
 
     private Vector3 checkingRouteLength1;
     private Vector3 checkingRouteLength2;
@@ -44,7 +49,7 @@ public class RouteCalculator : MonoBehaviour {
 
     private void Awake() {
 
-        routeState = RouteState.groundLine;
+        routeState = RouteState.bezierCurve;
 
         positionSaveList = new List<Vector3>();
     }
@@ -55,21 +60,6 @@ public class RouteCalculator : MonoBehaviour {
         lineRenderer.transform.SetParent(transform, false);
         lineRenderer.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         lineRenderer.useWorldSpace = true;
-
-        generateRoutes = GenerateRoutes.Instance.GetComponent<GenerateRoutes>();
-        generateRoutes.OnStartingPointAndEndingPointVec3Changed += GenerateRoutes_OnStartingPointAndEndingPointVec3Changed;
-        generateRoutes.OnEndingPointGenerated += GenerateRoutes_OnEndingPointGenerated;
-    }
-
-    private void GenerateRoutes_OnStartingPointAndEndingPointVec3Changed(object sender, System.EventArgs e) {
-
-        startingPoint = generateRoutes.StartingPointVec3;
-        endingPoint = generateRoutes.EndingPointVec3;
-    }
-
-    private void GenerateRoutes_OnEndingPointGenerated(object sender, System.EventArgs e) {
-
-        ClearEvents();
     }
 
     private void Update() {
@@ -94,11 +84,87 @@ public class RouteCalculator : MonoBehaviour {
 
     private void DrawBezierCurve() {
 
-        float averageOfStartingPointYAndEndingPointY = (startingPoint.y + endingPoint.y) / 2;
-
         middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
-        middlePoint.y = (averageOfStartingPointYAndEndingPointY + height);
+        middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
         middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
+
+        float checkRadius = height;
+
+        Collider[] testColliders;
+
+        testColliders = Physics.OverlapSphere(middlePoint, checkRadius, groundLayerMask);
+
+        if (testColliders.Length > 0) {
+            //collided
+
+            if (startingPlanet == endingPlanet) {
+
+                if (startingPlanet != null && endingPlanet != null) {
+
+                    float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
+                    float a = (startingPlanet.shapeSettings.planetRadius + height) / d;
+
+                    middlePoint = new Vector3((middlePoint.x - startingPlanet.transform.position.x) * a, (middlePoint.y - startingPlanet.transform.position.y) * a, (middlePoint.z - startingPlanet.transform.position.z) * a);
+                } else {
+                    //mouse pointer (preview) is in outer space that there is no where that it could land on
+
+                    middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
+                    middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
+                    middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
+                }
+            } else {
+                //planetry routes
+
+                middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
+                middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
+                middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
+            }
+        } else {
+
+            Debug.Log("s");
+
+            if (startingPlanet == endingPlanet) {
+
+                if (startingPlanet != null && endingPlanet != null) {
+
+                    float planetRadiusOfStartingAirportOfThisRoute = startingPlanet.shapeSettings.planetRadius;
+                    float collisionCheckMultiplier = 1.1f;
+
+                    checkRadius = planetRadiusOfStartingAirportOfThisRoute * collisionCheckMultiplier;
+
+                    testColliders = Physics.OverlapSphere(middlePoint, checkRadius, groundLayerMask);
+
+                    if (testColliders.Length > 0) {
+                        //found that it is inside a planet now
+
+                        Debug.Log(startingPlanet.shapeSettings.planetRadius);
+
+                        float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
+                        float a = (startingPlanet.shapeSettings.planetRadius + height) / d;
+
+                        middlePoint = new Vector3((middlePoint.x - startingPlanet.transform.position.x) * a, (middlePoint.y - startingPlanet.transform.position.y) * a, (middlePoint.z - startingPlanet.transform.position.z) * a);
+
+                    } else {
+                        //it is not in any planet
+
+                        Debug.LogError("couldn't find a planet that it is inside now");
+                    }
+                } else {
+                    //mouse pointer (preview) is in outer space that there is no where that it could land on
+
+                    middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
+                    middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
+                    middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
+                }
+            } else {
+
+                //planetry routes
+
+                middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
+                middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
+                middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
+            }
+        }
 
         if (lineRenderer == null || startingPoint == null || middlePoint == null || endingPoint == null) {
             return; // no points specified
@@ -165,48 +231,9 @@ public class RouteCalculator : MonoBehaviour {
 
             position = Vector3.Lerp(p0, p1, i / (numberOfPoints - 1));
 
-            position = AttachGroundLineToGround(position);
-
             lineRenderer.SetPosition(i, position);
 
             positionSaveList[i] = position;
-        }
-    }
-
-    private Vector3 AttachGroundLineToGround(Vector3 position) {
-
-        Vector3 checkPosition = position;
-
-        float radius = 0.01f;
-
-        Collider[] colliders = Physics.OverlapSphere(checkPosition, radius, groundLayerMask);
-
-        Debug.Log(Physics.OverlapSphere(checkPosition, radius, groundLayerMask));
-
-        if (colliders.Length <= 0) {
-            //no collision detected
-            while (colliders.Length <= 0) {
-
-                checkPosition.y -= radius;
-                colliders = Physics.OverlapSphere(checkPosition, radius, groundLayerMask);
-            }
-
-            return checkPosition;
-        } else {
-
-            if (colliders.Length > 0) {
-                //collision detected
-
-                while (colliders.Length > 0) {
-
-                    checkPosition.y += radius;
-                    colliders = Physics.OverlapSphere(checkPosition, radius, groundLayerMask);
-                }
-
-                return checkPosition;
-            }
-
-            return checkPosition;
         }
     }
 
@@ -223,12 +250,6 @@ public class RouteCalculator : MonoBehaviour {
         }
 
         numberOfPoints = (int)(Mathf.Ceil(routeLength * lineQuality));
-    }
-
-    private void ClearEvents() {
-
-        generateRoutes.OnStartingPointAndEndingPointVec3Changed -= GenerateRoutes_OnStartingPointAndEndingPointVec3Changed;
-        generateRoutes.OnEndingPointGenerated -= GenerateRoutes_OnEndingPointGenerated;
     }
 
     private void SetLengthOfPositionSaveList() {
@@ -299,5 +320,17 @@ public class RouteCalculator : MonoBehaviour {
         lineRenderer.endColor = lineRendererColor;
         lineRenderer.startWidth = lineRendererWidth;
         lineRenderer.endWidth = lineRendererWidth;
+    }
+
+    public void SetStartingAndEndingPlanet(Planet startingPlanet, Planet endingPlanet) {
+
+        this.startingPlanet = startingPlanet;
+        this.endingPlanet = endingPlanet;
+    }
+
+    public void Vec3sChanged(Vector3 startingPointVec3, Vector3 endingPointVec3) {
+
+        startingPoint = startingPointVec3;
+        endingPoint = endingPointVec3;
     }
 }

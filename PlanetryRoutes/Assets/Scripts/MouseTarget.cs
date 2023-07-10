@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -165,5 +166,25 @@ public class MouseTarget : MonoBehaviour {
     public bool IsGameObjectThatsTouchingMousePointerIsInGroundLayer() {
 
         return mousePositionRaycastHit.transform.gameObject.layer == groundLayerNumber;
+    }
+
+    public Planet GetPlanetThatMouseIsOn() {
+
+        Planet planet = mousePositionRaycastHit.transform.GetComponentInParent<Planet>();
+
+        if (planet != null) {
+            //this is planet
+
+            return planet;
+        } else {
+
+            if (mousePositionRaycastHit.transform.TryGetComponent(out Airport airport)) {
+
+                return airport.GetPlacedPlanet();
+            } else {
+
+                return null;
+            }
+        }
     }
 }
