@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GenerateAirports : MonoBehaviour {
 
-    private Planet closestPlanet;
-
     [SerializeField] private Transform airportPrefab;
     [SerializeField] private Planet[] planets;
 
@@ -25,6 +23,7 @@ public class GenerateAirports : MonoBehaviour {
 
     private void GameInput_OnPlaceAirportAction(object sender, System.EventArgs e) {
 
+        Debug.Log(mouseTarget.IsGameObjectThatsTouchingMousePointerIsInGroundLayer());
         if (mouseTarget.IsGameObjectThatsTouchingMousePointerIsInGroundLayer()) {
 
             PlaceAirport("Airport" + " " + "(" + airportNameIdx + ")");
@@ -37,18 +36,8 @@ public class GenerateAirports : MonoBehaviour {
 
         Transform airportInstantiated = Instantiate(airportPrefab, mouseTarget.placeAirportPoint, Quaternion.identity);
         airportInstantiated.gameObject.name = airportName;
-        float max = float.MaxValue;
 
-        foreach (Planet planet in planets) {
-
-            float dist = Vector3.Distance(airportInstantiated.position, planet.transform.position);
-
-            if (dist < max) {
-
-                closestPlanet = planet;
-                max = dist;
-            }
-        }
+        Planet closestPlanet = PlanetHandler.Instance.GetClosestPlanet(airportInstantiated.position);
 
         airportInstantiated.GetComponent<Airport>().SetPlacedPlanet(closestPlanet);
         airportInstantiated.LookAt(closestPlanet.transform);

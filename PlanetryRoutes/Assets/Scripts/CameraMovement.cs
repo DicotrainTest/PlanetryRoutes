@@ -68,8 +68,6 @@ public class CameraMovement : MonoBehaviour {
         if (gameInput.HoldingRightMouseButton()) {
             //holding right mouse button
 
-            Cursor.lockState = CursorLockMode.Locked;
-
             Vector2 mouseInputVector = gameInput.GetMouseAxisRaw();
 
             mouseX = mouseInputVector.x * normalCameraStateMouseSensitivity * Time.deltaTime;
@@ -82,10 +80,6 @@ public class CameraMovement : MonoBehaviour {
 
             //camera
             transform.rotation = Quaternion.Euler(XRotation, YRotation, 0);
-        } else {
-            //not holding right mouse button
-
-            Cursor.lockState = CursorLockMode.None;
         }
     }
 
@@ -103,8 +97,6 @@ public class CameraMovement : MonoBehaviour {
     //-orbiting-
     private void HandleOrbitingCameraMovement() {
 
-        Cursor.lockState = CursorLockMode.Locked;
-
         if (gameInput.HoldingRightMouseButton()) {
 
             Vector2 inputVector = gameInput.GetMouseAxisRaw();
@@ -112,8 +104,6 @@ public class CameraMovement : MonoBehaviour {
             mouseX = inputVector.x * orbitingCameraStateMouseSensitivity * Time.deltaTime;
             mouseY = inputVector.y * orbitingCameraStateMouseSensitivity * Time.deltaTime;
         } else {
-
-            Cursor.lockState = CursorLockMode.None;
 
             mouseX = 0;
             mouseY = 0;
@@ -128,6 +118,6 @@ public class CameraMovement : MonoBehaviour {
 
         transform.localEulerAngles = new Vector3(XRotation, YRotation, 0);
 
-        transform.position = viewingPlanet.position - transform.forward * (viewingPlanetRadius + planetViewDistance);
+        transform.position = viewingPlanet.position - transform.forward * (viewingPlanetRadius * planetViewDistance);
     }
 }

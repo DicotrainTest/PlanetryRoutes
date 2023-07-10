@@ -66,6 +66,8 @@ public class GenerateRoutes : MonoBehaviour {
 
                     Planet planetThatMouseIsOn = mouseTarget.GetPlanetThatMouseIsOn();
 
+                    Debug.Log(planetThatMouseIsOn);
+
                     routeCalculator.GetComponent<RouteCalculator>().SetStartingAndEndingPlanet(startingPointInteractedAirport.GetPlacedPlanet(), planetThatMouseIsOn);
                     routeCalculator.GetComponent<RouteCalculator>().Vec3sChanged(startingPointVec3, endingPointVec3);
                     break;

@@ -112,16 +112,16 @@ public class MouseTarget : MonoBehaviour {
                         }
                     case State.EndingPoint: {
 
-                        if (selectedAirport.GetRouteGenerationPoint() != routeStartingAirport) {
-                            state = State.StartingPoint;
-                            routeEndingAirport = selectedAirport.GetRouteGenerationPoint();
-                            selectedAirport.EndPointInteract();
-                            break;
-                        } else {
+                            if (selectedAirport.GetRouteGenerationPoint() != routeStartingAirport) {
+                                state = State.StartingPoint;
+                                routeEndingAirport = selectedAirport.GetRouteGenerationPoint();
+                                selectedAirport.EndPointInteract();
+                                break;
+                            } else {
 
-                            break;
+                                break;
+                            }
                         }
-                    }
                 }
             }
         }
@@ -156,6 +156,7 @@ public class MouseTarget : MonoBehaviour {
     }
 
     private void SetSelectedAirport(Airport selectedAirport) {
+
         this.selectedAirport = selectedAirport;
 
         OnSelectedAirportChanged?.Invoke(this, new OnSelectedAirportChangedEventArgs {
@@ -165,26 +166,26 @@ public class MouseTarget : MonoBehaviour {
 
     public bool IsGameObjectThatsTouchingMousePointerIsInGroundLayer() {
 
-        return mousePositionRaycastHit.transform.gameObject.layer == groundLayerNumber;
+        if (mousePositionRaycastHit.transform != null) {
+
+            return mousePositionRaycastHit.transform.gameObject.layer == groundLayerNumber;
+        }
+
+        return false;
     }
 
     public Planet GetPlanetThatMouseIsOn() {
 
-        Planet planet = mousePositionRaycastHit.transform.GetComponentInParent<Planet>();
+        float closestPlanetDistance = PlanetHandler.Instance.GetClosestPlanetDistance(RoutePreviewEndingPointPoint.position);
+        Planet closestPlanet = PlanetHandler.Instance.GetClosestPlanet(RoutePreviewEndingPointPoint.position);
 
-        if (planet != null) {
-            //this is planet
+        Debug.Log(closestPlanetDistance - closestPlanet.shapeSettings.planetRadius <= PlanetHandler.Instance.GetPlanetDetectableMaxDistance());
+        if (closestPlanetDistance - closestPlanet.shapeSettings.planetRadius <= PlanetHandler.Instance.GetPlanetDetectableMaxDistance()) {
 
-            return planet;
+            return closestPlanet;
         } else {
 
-            if (mousePositionRaycastHit.transform.TryGetComponent(out Airport airport)) {
-
-                return airport.GetPlacedPlanet();
-            } else {
-
-                return null;
-            }
+            return null;
         }
-    }
+    } 
 }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -88,82 +90,40 @@ public class RouteCalculator : MonoBehaviour {
         middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
         middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
 
-        float checkRadius = height;
-
-        Collider[] testColliders;
-
-        testColliders = Physics.OverlapSphere(middlePoint, checkRadius, groundLayerMask);
-
-        if (testColliders.Length > 0) {
-            //collided
+        if (startingPlanet != null && endingPlanet != null) {
 
             if (startingPlanet == endingPlanet) {
 
-                if (startingPlanet != null && endingPlanet != null) {
+                // coordinates of centre
+                Vector3 c = startingPlanet.transform.position;
+
+                float r = startingPlanet.shapeSettings.planetRadius + PlanetHandler.Instance.GetPlanetDetectableMaxDistance();
+
+                Debug.Log(r);
+
+                // coordinates of point
+                Vector3 p = middlePoint;
+
+                float ans = check(c, p);
+
+                Debug.Log(ans <= (r * r));
+
+                if (ans <= (r * r)) {
 
                     float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
                     float a = (startingPlanet.shapeSettings.planetRadius + height) / d;
 
                     middlePoint = new Vector3((middlePoint.x - startingPlanet.transform.position.x) * a, (middlePoint.y - startingPlanet.transform.position.y) * a, (middlePoint.z - startingPlanet.transform.position.z) * a);
-                } else {
-                    //mouse pointer (preview) is in outer space that there is no where that it could land on
-
-                    middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
-                    middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
-                    middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
                 }
             } else {
                 //planetry routes
-
-                middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
-                middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
-                middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
+                    
+                middlePoint.y += height;
             }
         } else {
+            //startingPlanet or/and endingPlanet is null
 
-            Debug.Log("s");
-
-            if (startingPlanet == endingPlanet) {
-
-                if (startingPlanet != null && endingPlanet != null) {
-
-                    float planetRadiusOfStartingAirportOfThisRoute = startingPlanet.shapeSettings.planetRadius;
-                    float collisionCheckMultiplier = 1.1f;
-
-                    checkRadius = planetRadiusOfStartingAirportOfThisRoute * collisionCheckMultiplier;
-
-                    testColliders = Physics.OverlapSphere(middlePoint, checkRadius, groundLayerMask);
-
-                    if (testColliders.Length > 0) {
-                        //found that it is inside a planet now
-
-                        Debug.Log(startingPlanet.shapeSettings.planetRadius);
-
-                        float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
-                        float a = (startingPlanet.shapeSettings.planetRadius + height) / d;
-
-                        middlePoint = new Vector3((middlePoint.x - startingPlanet.transform.position.x) * a, (middlePoint.y - startingPlanet.transform.position.y) * a, (middlePoint.z - startingPlanet.transform.position.z) * a);
-
-                    } else {
-                        //it is not in any planet
-
-                        Debug.LogError("couldn't find a planet that it is inside now");
-                    }
-                } else {
-                    //mouse pointer (preview) is in outer space that there is no where that it could land on
-
-                    middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
-                    middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
-                    middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
-                }
-            } else {
-
-                //planetry routes
-
-                middlePoint.x = (startingPoint.x + endingPoint.x) / 2;
-                middlePoint.y = (startingPoint.y + endingPoint.y) / 2;
-                middlePoint.z = (startingPoint.z + endingPoint.z) / 2;
-            }
+            middlePoint.y += height;
         }
 
         if (lineRenderer == null || startingPoint == null || middlePoint == null || endingPoint == null) {
@@ -200,6 +160,17 @@ public class RouteCalculator : MonoBehaviour {
 
             positionSaveList[i] = position;
         }
+    }
+
+    private float check(Vector3 c, Vector3 p) {
+
+        float x1 = (float)Math.Pow((p.x - c.x), 2);
+        float y1 = (float)Mathf.Pow((p.y - c.y), 2);
+        float z1 = (float)Math.Pow((p.z - c.z), 2);
+
+        // distance between the
+        // centre and given point
+        return (x1 + y1 + z1);
     }
 
     private void DrawGroundLine() {
