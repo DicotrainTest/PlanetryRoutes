@@ -97,7 +97,7 @@ public class RouteCalculator : MonoBehaviour {
                 // coordinates of centre
                 Vector3 c = startingPlanet.transform.position;
 
-                float r = startingPlanet.shapeSettings.planetRadius + PlanetHandler.Instance.GetPlanetDetectableMaxDistance();
+                float r = startingPlanet.shapeSettings.planetRadius + startingPlanet.GetPlanetDetectableMaxMouseDistance();
 
                 Debug.Log(r);
 
@@ -111,9 +111,13 @@ public class RouteCalculator : MonoBehaviour {
                 if (ans <= (r * r)) {
 
                     float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
+                    Debug.Log(d);
                     float a = (startingPlanet.shapeSettings.planetRadius + height) / d;
+                    Debug.Log(a);
+
 
                     middlePoint = new Vector3((middlePoint.x - startingPlanet.transform.position.x) * a, (middlePoint.y - startingPlanet.transform.position.y) * a, (middlePoint.z - startingPlanet.transform.position.z) * a);
+                    Debug.Log(middlePoint);
                 }
             } else {
                 //planetry routes

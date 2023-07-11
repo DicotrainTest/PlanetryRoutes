@@ -16,18 +16,25 @@ public class MouseTarget : MonoBehaviour {
         public Airport selectedAirport;
     }
 
+    [Header("where previewing route ends")]
     [SerializeField] private Transform RoutePreviewEndingPointPoint;
+
+    [Header("main camera")]
     [SerializeField] private Camera mainCamera;
+
+    [Header("layers")]
     [SerializeField] private int groundLayerNumber;
     [SerializeField] private int airportsLayerNumber;
 
     private GameInput gameInput;
 
-    public Vector3 routePreviewPoint;
-    public Vector3 placeAirportPoint;
+    private PlanetHandler planetHandler;
 
-    public Vector3 routeStartingAirport;
-    public Vector3 routeEndingAirport;
+    private Vector3 routePreviewPoint;
+    private Vector3 placeAirportPoint;
+
+    private Vector3 routeStartingAirport;
+    private Vector3 routeEndingAirport;
 
     private Airport selectedAirport;
 
@@ -53,6 +60,8 @@ public class MouseTarget : MonoBehaviour {
     private void Start() {
 
         gameInput = GameInput.Instance.GetComponent<GameInput>();
+
+        planetHandler = PlanetHandler.Instance.GetComponent<PlanetHandler>();
 
         gameInput.OnSpawnAircraftAction += GameInput_OnSpawnAircraftAction;
     }
@@ -176,16 +185,36 @@ public class MouseTarget : MonoBehaviour {
 
     public Planet GetPlanetThatMouseIsOn() {
 
-        float closestPlanetDistance = PlanetHandler.Instance.GetClosestPlanetDistance(RoutePreviewEndingPointPoint.position);
-        Planet closestPlanet = PlanetHandler.Instance.GetClosestPlanet(RoutePreviewEndingPointPoint.position);
+        float closestPlanetDistance = planetHandler.GetClosestPlanetDistance(RoutePreviewEndingPointPoint.position);
+        Planet closestPlanet = planetHandler.GetClosestPlanet(RoutePreviewEndingPointPoint.position);
 
-        Debug.Log(closestPlanetDistance - closestPlanet.shapeSettings.planetRadius <= PlanetHandler.Instance.GetPlanetDetectableMaxDistance());
-        if (closestPlanetDistance - closestPlanet.shapeSettings.planetRadius <= PlanetHandler.Instance.GetPlanetDetectableMaxDistance()) {
+        Debug.Log(closestPlanetDistance - closestPlanet.shapeSettings.planetRadius <= closestPlanet.GetPlanetDetectableMaxMouseDistance());
+        if (closestPlanetDistance - closestPlanet.shapeSettings.planetRadius <= closestPlanet.GetPlanetDetectableMaxMouseDistance()) {
 
             return closestPlanet;
         } else {
 
             return null;
         }
-    } 
+    }
+
+    public Vector3 GetRoutePreviewPoint() {
+
+        return routePreviewPoint;
+    }
+
+    public Vector3 GetRouteStartingAirport() {
+
+        return routeStartingAirport;
+    }
+
+    public Vector3 GetRouteEndingAirport() {
+
+        return routeEndingAirport;
+    }
+
+    public Vector3 GetPlaceAirportPoint() {
+
+        return placeAirportPoint;
+    }
 }

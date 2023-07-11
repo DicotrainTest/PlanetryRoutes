@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Airport : MonoBehaviour {
 
+    [Header("prefab of aircraft")]
     [SerializeField] private Transform aircraftPrefab;
+
+    [Header("where route starts and ends")]
     [SerializeField] private Transform routeGenerationPoint;
 
     private List<GameObject> routesInThisAirportList;

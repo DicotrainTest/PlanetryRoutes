@@ -9,16 +9,18 @@ public class TerrainFace
     ShapeGenerator shapeGenerator;
     Mesh mesh;
     MeshCollider meshCollider;
+    Transform planet;
     int resolution;
     Vector3 localUp;
     Vector3 axisA;
     Vector3 axisB;
 
-    public TerrainFace(ShapeGenerator shapeGenerator, Mesh mesh, MeshCollider meshCollider, int resolution, Vector3 localUp)
+    public TerrainFace(ShapeGenerator shapeGenerator, Mesh mesh, MeshCollider meshCollider, int resolution, Vector3 localUp, Transform planet)
     {
         this.shapeGenerator = shapeGenerator;
         this.mesh = mesh;
         this.meshCollider = meshCollider;
+        this.planet = planet;
         this.resolution = resolution;
         this.localUp = localUp;
 
@@ -42,7 +44,7 @@ public class TerrainFace
                 Vector3 pointOnUnitCube = localUp + (percent.x - .5f) * 2 * axisA + (percent.y - .5f) * 2 * axisB;
                 Vector3 pointOnUnitSphere = pointOnUnitCube.normalized;
                 float unscaledElevation = shapeGenerator.CalculateUnscaledElevation(pointOnUnitSphere);
-                vertices[i] = pointOnUnitSphere * shapeGenerator.GetScaledElevation(unscaledElevation);
+                vertices[i] = pointOnUnitSphere * shapeGenerator.GetScaledElevation(unscaledElevation) + planet.position;
                 uv[i].y = unscaledElevation;
 
                 if (x != resolution - 1 && y != resolution - 1)

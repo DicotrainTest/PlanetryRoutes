@@ -12,6 +12,9 @@ public class Planet : MonoBehaviour
     public bool autoUpdate = true;
 
     [SerializeField] private int groundLayer;
+
+    [SerializeField] private float planetDetectableMaxMouseDistance;
+
     public enum FaceRenderMask { All, Top, Bottom, Left, Right, Front, Back };
     public FaceRenderMask faceRenderMask;
 
@@ -36,6 +39,7 @@ public class Planet : MonoBehaviour
 
     private void Awake() {
 
+        Clear();
         GeneratePlanet();
     }
 
@@ -81,7 +85,7 @@ public class Planet : MonoBehaviour
             meshColliders[i] = meshObjects[i].AddComponent<MeshCollider>();
 
             meshFilters[i].GetComponent<MeshRenderer>().sharedMaterial = colourSettings.planetMaterial;
-            terrainFaces[i] = new TerrainFace(shapeGenerator, meshFilters[i].sharedMesh, meshColliders[i], resolution, directions[i]);
+            terrainFaces[i] = new TerrainFace(shapeGenerator, meshFilters[i].sharedMesh, meshColliders[i], resolution, directions[i], transform);
             bool renderFace = faceRenderMask == FaceRenderMask.All || (int)faceRenderMask - 1 == i;
             meshFilters[i].gameObject.SetActive(renderFace);
         }
@@ -142,9 +146,38 @@ public class Planet : MonoBehaviour
 
     public void Clear() {
 
-        for (int i = 0; i < meshObjects.Length; i++) {
+        if (meshObjects != null) {
 
-            DestroyImmediate(meshObjects[i]);
+            if (meshObjects.Length > 0) {
+
+                DestroyImmediate(transform.GetChild(0).gameObject);
+                DestroyImmediate(transform.GetChild(0).gameObject);
+                DestroyImmediate(transform.GetChild(0).gameObject);
+                DestroyImmediate(transform.GetChild(0).gameObject);
+                DestroyImmediate(transform.GetChild(0).gameObject);
+                DestroyImmediate(transform.GetChild(0).gameObject);
+
+                meshObjects = new GameObject[0];
+                meshColliders = new MeshCollider[0];
+                meshFilters = new MeshFilter[0];
+                terrainFaces = new TerrainFace[0];
+
+            }
         }
+    }
+
+    public float GetPlanetDetectableMaxMouseDistance() {
+
+        return planetDetectableMaxMouseDistance;
+    }
+
+    public void MatchRotationWithSurface(Transform body) {
+
+        Vector3 gravityUp = (body.position - transform.position).normalized;
+        Vector3 bodyUp = body.up;
+
+        Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * body.rotation;
+
+        body.rotation = targetRotation;
     }
 }

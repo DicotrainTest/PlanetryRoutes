@@ -8,17 +8,22 @@ public class Aircraft : MonoBehaviour {
 
     private RouteCalculator routeCalculator;
 
+    private PlanetHandler planetHandler;
+
     private Vector3 targetPosition;
     private Vector3 currentPosition;
 
-    private float speed = 10f;
-    private float turnDistance = 0.01f;
+    [Header("settings for aircraft")]
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float turnDistance = 0.01f; 
 
     private bool isMovingForward;
 
     private void Start() {
 
         routeCalculator = GetComponentInParent<RouteCalculator>();
+
+        planetHandler = PlanetHandler.Instance.GetComponent<PlanetHandler>();
 
         targetPosition = routeCalculator.GetNextWaypoint(targetPosition, true, isMovingForward);
         transform.position = targetPosition;

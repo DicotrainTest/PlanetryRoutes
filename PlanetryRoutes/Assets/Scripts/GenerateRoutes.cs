@@ -12,7 +12,8 @@ public class GenerateRoutes : MonoBehaviour {
     private List<Airport> startingPointInteractedAirportHistoryList;
     private List<Airport> endingPointInteractedAirportHistoryList;
 
-    [SerializeField] private GameObject routeCalculatorPrefab;
+    [Header("prefab of routeCalculator to spawn")]
+    [SerializeField] private Transform routeCalculatorPrefab;
 
     private Vector3 startingPointVec3;
     private Vector3 endingPointVec3;
@@ -62,7 +63,7 @@ public class GenerateRoutes : MonoBehaviour {
 
             case State.PlacingEndingPoint: {
 
-                    endingPointVec3 = mouseTarget.routePreviewPoint;
+                    endingPointVec3 = mouseTarget.GetRoutePreviewPoint();
 
                     Planet planetThatMouseIsOn = mouseTarget.GetPlanetThatMouseIsOn();
 
@@ -77,13 +78,13 @@ public class GenerateRoutes : MonoBehaviour {
 
     private void GenerateStartingPoint() {
 
-        startingPointVec3 = mouseTarget.routeStartingAirport;
+        startingPointVec3 = mouseTarget.GetRouteStartingAirport();
 
         state = State.PlacingEndingPoint;
 
         routeNum++;
 
-        routeCalculator = Instantiate(routeCalculatorPrefab, Vector3.zero, Quaternion.identity);
+        routeCalculator = Instantiate(routeCalculatorPrefab.gameObject, Vector3.zero, Quaternion.identity);
 
         routeCalculator.name = "route (" + routeNum + ")";
 
@@ -106,7 +107,7 @@ public class GenerateRoutes : MonoBehaviour {
                 }
             }
 
-            endingPointVec3 = mouseTarget.routeEndingAirport;
+            endingPointVec3 = mouseTarget.GetRouteEndingAirport();
             routeCalculator.GetComponent<RouteCalculator>().Vec3sChanged(startingPointVec3, endingPointVec3);
 
             state = State.Idle;

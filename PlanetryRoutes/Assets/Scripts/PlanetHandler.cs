@@ -6,7 +6,7 @@ public class PlanetHandler : MonoBehaviour {
 
     public static PlanetHandler Instance { get; private set; }
 
-    [SerializeField] private float planetDetectableMaxMouseDistance;
+    [Header("every planet that you have in game")]
     [SerializeField] private Planet[] planets;
 
     private void Awake() {
@@ -56,10 +56,5 @@ public class PlanetHandler : MonoBehaviour {
         }
 
         return max;
-    }
-
-    public float GetPlanetDetectableMaxDistance() {
-
-        return planetDetectableMaxMouseDistance;
     }
 }

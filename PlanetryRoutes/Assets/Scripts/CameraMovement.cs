@@ -6,12 +6,17 @@ using UnityEngine.InputSystem;
 public class CameraMovement : MonoBehaviour {
 
     private GameInput gameInput;
+
+    [Header("main camera")]
     [SerializeField] private Camera mainCamera;
 
+    [Header("settings for player camera movement")]
     [SerializeField] private float normalCameraStateMouseSensitivity = 100f;
     [SerializeField] private float orbitingCameraStateMouseSensitivity = 100f;
     [SerializeField] private float speed = 12f;
     [SerializeField] private float planetViewDistance = 50f;
+
+    [Header("planet that player is viewing at orbiting camera state")]
     [SerializeField] private Transform viewingPlanet;
 
     private float XRotation = 0f;

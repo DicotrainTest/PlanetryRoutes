@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GenerateAirports : MonoBehaviour {
 
+    [Header("prefab of airport to spawn")]
     [SerializeField] private Transform airportPrefab;
-    [SerializeField] private Planet[] planets;
 
     private GameInput gameInput;
 
@@ -34,13 +34,12 @@ public class GenerateAirports : MonoBehaviour {
 
     private void PlaceAirport(string airportName) {
 
-        Transform airportInstantiated = Instantiate(airportPrefab, mouseTarget.placeAirportPoint, Quaternion.identity);
+        Transform airportInstantiated = Instantiate(airportPrefab, mouseTarget.GetPlaceAirportPoint(), Quaternion.identity);
         airportInstantiated.gameObject.name = airportName;
 
         Planet closestPlanet = PlanetHandler.Instance.GetClosestPlanet(airportInstantiated.position);
 
         airportInstantiated.GetComponent<Airport>().SetPlacedPlanet(closestPlanet);
-        airportInstantiated.LookAt(closestPlanet.transform);
-        airportInstantiated.localEulerAngles += Vector3.left * 90;
+        closestPlanet.MatchRotationWithSurface(airportInstantiated);
     }
 }

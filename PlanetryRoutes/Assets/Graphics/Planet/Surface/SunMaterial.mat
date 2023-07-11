@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlanetMaterial
+  m_Name: SunMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 1058f67c7c20e7e45aa316c579ceba86,
     type: 3}
   m_ValidKeywords: []
@@ -123,7 +123,7 @@ Material:
     - _ElevationMinMax: {r: -0.14450498, g: 0.24361932, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _elevationMinMax: {r: -0.12025166, g: 0.09650958, b: 0, a: 0}
+    - _elevationMinMax: {r: -0.020370334, g: 0.027706528, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &718645845735692650
 MonoBehaviour:
