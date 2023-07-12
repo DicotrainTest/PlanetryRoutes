@@ -23,7 +23,6 @@ public class GenerateAirports : MonoBehaviour {
 
     private void GameInput_OnPlaceAirportAction(object sender, System.EventArgs e) {
 
-        Debug.Log(mouseTarget.IsGameObjectThatsTouchingMousePointerIsInGroundLayer());
         if (mouseTarget.IsGameObjectThatsTouchingMousePointerIsInGroundLayer()) {
 
             PlaceAirport("Airport" + " " + "(" + airportNameIdx + ")");

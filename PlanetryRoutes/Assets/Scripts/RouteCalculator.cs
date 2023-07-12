@@ -94,31 +94,14 @@ public class RouteCalculator : MonoBehaviour {
 
             if (startingPlanet == endingPlanet) {
 
-                // coordinates of centre
-                Vector3 c = startingPlanet.transform.position;
+                float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
+                float r_h = startingPlanet.shapeSettings.planetRadius + height;
+                float a = r_h / d;
 
-                float r = startingPlanet.shapeSettings.planetRadius + startingPlanet.GetPlanetDetectableMaxMouseDistance();
-
-                Debug.Log(r);
-
-                // coordinates of point
-                Vector3 p = middlePoint;
-
-                float ans = check(c, p);
-
-                Debug.Log(ans <= (r * r));
-
-                if (ans <= (r * r)) {
-
-                    float d = Vector3.Distance(startingPlanet.transform.position, middlePoint);
-                    Debug.Log(d);
-                    float a = (startingPlanet.shapeSettings.planetRadius + height) / d;
-                    Debug.Log(a);
-
-
-                    middlePoint = new Vector3((middlePoint.x - startingPlanet.transform.position.x) * a, (middlePoint.y - startingPlanet.transform.position.y) * a, (middlePoint.z - startingPlanet.transform.position.z) * a);
-                    Debug.Log(middlePoint);
-                }
+                middlePoint = new Vector3(
+                    (middlePoint.x - startingPlanet.transform.position.x) * a + startingPlanet.transform.position.x,
+                    (middlePoint.y - startingPlanet.transform.position.y) * a + startingPlanet.transform.position.y,
+                    (middlePoint.z - startingPlanet.transform.position.z) * a + startingPlanet.transform.position.z);
             } else {
                 //planetry routes
                     

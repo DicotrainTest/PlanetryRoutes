@@ -48,11 +48,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AtmosphereIntensity: 0.5
+    - _AtmosphereIntensity: 5
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _RimIntensity: 10
-    - _Transparency: 0.3
+    - _RimIntensity: 5
+    - _Transparency: 0.171
     m_Colors:
     - _AtmosphereColor: {r: 0.18970275, g: 0.8207547, b: 0.8207547, a: 0}
   m_BuildTextureStacks: []

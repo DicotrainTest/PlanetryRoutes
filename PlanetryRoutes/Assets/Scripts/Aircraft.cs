@@ -46,6 +46,7 @@ public class Aircraft : MonoBehaviour {
         currentPosition = targetPosition;
 
         targetPosition = routeCalculator.GetNextWaypoint(targetPosition, false, isMovingForward);
+        //routeCalculator
         transform.LookAt(targetPosition);
 
         if (currentPosition == targetPosition) {
