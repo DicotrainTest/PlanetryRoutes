@@ -146,23 +146,19 @@ public class Planet : MonoBehaviour
 
     public void Clear() {
 
-        if (meshObjects != null) {
+        if (transform.childCount > 0) {
 
-            if (meshObjects.Length > 0) {
+            int meshObjectCount = transform.childCount;
+
+            for (int i = 0; i < meshObjectCount; i++) {
 
                 DestroyImmediate(transform.GetChild(0).gameObject);
-                DestroyImmediate(transform.GetChild(0).gameObject);
-                DestroyImmediate(transform.GetChild(0).gameObject);
-                DestroyImmediate(transform.GetChild(0).gameObject);
-                DestroyImmediate(transform.GetChild(0).gameObject);
-                DestroyImmediate(transform.GetChild(0).gameObject);
-
-                meshObjects = new GameObject[0];
-                meshColliders = new MeshCollider[0];
-                meshFilters = new MeshFilter[0];
-                terrainFaces = new TerrainFace[0];
-
             }
+
+            meshObjects = new GameObject[0];
+            meshColliders = new MeshCollider[0];
+            meshFilters = new MeshFilter[0];
+            terrainFaces = new TerrainFace[0];
         }
     }
 
